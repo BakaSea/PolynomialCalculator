@@ -3,12 +3,12 @@
 
 class Complex {
 public:
+    Complex();
     Complex(double a, double b);
     Complex operator + (const Complex &A) const;
     Complex operator - (const Complex &A) const;
     Complex operator - (void);
     Complex operator * (const Complex &A) const;
-private:
     double a, b;
 };
 

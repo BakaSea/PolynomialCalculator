@@ -1,6 +1,10 @@
 #include "Complex.h"
 
-Complex::Complex(double a = 0, double b = 0) : a(a), b(b) {
+Complex::Complex() {
+    a = b = 0;
+}
+
+Complex::Complex(double a, double b) : a(a), b(b) {
 
 }
 
