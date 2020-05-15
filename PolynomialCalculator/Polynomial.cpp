@@ -10,10 +10,16 @@ Polynomial::~Polynomial() {
     a.clear();
 }
 
+Polynomial::Polynomial(double a0) {
+    a.clear();
+    a.push_back(a0);
+    normalize();
+}
+
 Polynomial::Polynomial(double *A, int len) {
     a.clear();
     for (int i = len-1; i >= 0; --i) a.push_back(A[i]);
-    while (a.size() > 1 && fabs(a.back()) < EPS) a.pop_back();
+    normalize();
 }
 
 Polynomial::Polynomial(const Polynomial &P) {
@@ -21,10 +27,36 @@ Polynomial::Polynomial(const Polynomial &P) {
     for (int i = 0; i < P.size(); ++i) {
         a.push_back(P.a[i]);
     }
+    normalize();
 }
 
 int Polynomial::size() const {
     return a.size();
+}
+
+void Polynomial::normalize() {
+    while (a.size() > 1 && fabs(a.back()) < EPS) a.pop_back();
+}
+
+double Polynomial::value(double x) {
+    double f = 0;
+    for (int i = size()-1; i >= 0; --i) {
+        f = f*x+a[i];
+    }
+    return f;
+}
+
+Polynomial Polynomial::reverse() const {
+    int n = a.size();
+    double *A = new double[n];
+    for (int i = 0; i < n; ++i) A[i] = a[i];
+    return Polynomial(A, n);
+}
+
+Polynomial Polynomial::mod(int n) const {
+    double *A = new double[n];
+    for (int i = 0; i < n; ++i) A[n-i-1] = a[i];
+    return Polynomial(A, n);
 }
 
 ostream &operator << (ostream &out, const Polynomial &P) {
@@ -90,6 +122,49 @@ Polynomial Polynomial::operator * (const Polynomial &P) {
     double *C = new double[nm];
     for (int i = 0; i < nm; ++i) C[i] = A[nm-i-1].a;
     return Polynomial(C, nm);
+}
+
+Polynomial Polynomial::operator / (const Polynomial &P) {
+    Polynomial F = reverse(), G = P.reverse();
+    int n = F.size(), m = G.size();
+    Polynomial Ginv = G.inv(n-m+1);
+    return (F*Ginv).mod(n-m+1).reverse();
+}
+
+Polynomial Polynomial::operator % (const Polynomial &P) {
+    return (*this)-(*this/P)*P;
+}
+
+Polynomial Polynomial::inv(int n) {
+    if (n == 1) return Polynomial(1.0/a[0]);
+    Polynomial f0 = inv(ceil(1.0*n/2.0));
+    Polynomial finv = f0*(Polynomial(2)-(*this)*f0);
+    return finv.mod(n);
+}
+
+Polynomial Polynomial::derivate() {
+    int n = size();
+    if (n == 1) return Polynomial(0);
+    double *A = new double[n-1];
+    for (int i = n-1; i; --i) {
+        A[n-i-1] = a[i]*i;
+    }
+    return Polynomial(A, n-1);
+}
+
+Polynomial Polynomial::integrate() {
+    int n = size();
+    double *A = new double[n+1];
+    A[n] = 0;
+    for (int i = n-1; i >= 0; --i) {
+        A[n-i-1] = a[i]/(i+1);
+    }
+    return Polynomial(A, n+1);
+}
+
+double Polynomial::integrate(double a, double b) {
+    Polynomial F = integrate();
+    return F.value(b)-F.value(a);
 }
 
 void Polynomial::FFT(Complex *A, int len, int f) {
