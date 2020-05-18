@@ -11,11 +11,29 @@ public:
     ~PManager();
     void addPolynomial(string name, Polynomial p);
     Polynomial getPolynomial(string name);
-    void calculate(string str);
+    int calculate(string str);
 private:
+    struct MyOperator {
+        char opt;
+        Polynomial a, b;
+        int pos;
+        MyOperator() {}
+        MyOperator(char opt, int pos): opt(opt), pos(pos) {}
+        MyOperator(char opt, Polynomial a, Polynomial b, int pos) : opt(opt), a(a), b(b), pos(pos) {}
+    };
+    struct MyPolynomial {
+        Polynomial P;
+        int depth, pos;
+        MyPolynomial() {}
+        MyPolynomial(Polynomial P, int depth, int pos) : P(P), depth(depth), pos(pos) {}
+    };
     unordered_map<string, Polynomial> mapPoly;
-    stack<string> stkOpt;
-    stack<Polynomial> stkPoly;
+    stack<MyOperator> stkOpt;
+    stack<MyPolynomial> stkPoly;
+    int depth;
+    int analyze(string str, int &p);
+    int getPriority(char opt);
+    int calStack();
 };
 
 #endif

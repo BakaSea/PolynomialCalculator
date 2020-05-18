@@ -10,6 +10,7 @@ public:
 private:
     PManager *manager;
     void addPolynomial();
+    void calculate();
 };
 
 #endif

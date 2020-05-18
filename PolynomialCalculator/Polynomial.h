@@ -23,13 +23,14 @@ public:
     friend ostream &operator << (ostream &out, const Polynomial &P);
     Polynomial operator + (const Polynomial &P);
     Polynomial operator - (const Polynomial &P);
+    Polynomial operator - (void);
     Polynomial operator * (const Polynomial &P);
     Polynomial operator / (const Polynomial &P);
     Polynomial operator % (const Polynomial &P);
     Polynomial inv(int n);
     Polynomial derivate();
     Polynomial integrate();
-    double integrate(double a, double b);
+    Polynomial integrate(double a, double b);
 private:
     void FFT(Complex *A, int len, int f);
 };

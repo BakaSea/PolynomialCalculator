@@ -108,6 +108,10 @@ Polynomial Polynomial::operator - (const Polynomial &P) {
     return C;
 }
 
+Polynomial Polynomial::operator - (void) {
+    return Polynomial(0)-(*this);
+}
+
 Polynomial Polynomial::operator * (const Polynomial &P) {
     int n = size(), m = P.size(), nm = 1;
     while (nm < n*2 || nm < m*2) nm <<= 1;
@@ -162,9 +166,9 @@ Polynomial Polynomial::integrate() {
     return Polynomial(A, n+1);
 }
 
-double Polynomial::integrate(double a, double b) {
+Polynomial Polynomial::integrate(double a, double b) {
     Polynomial F = integrate();
-    return F.value(b)-F.value(a);
+    return Polynomial(F.value(b)-F.value(a));
 }
 
 void Polynomial::FFT(Complex *A, int len, int f) {
