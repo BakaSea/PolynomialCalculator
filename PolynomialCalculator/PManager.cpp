@@ -21,12 +21,12 @@ int PManager::calculate(string str) {
 	while (!stkPoly.empty()) stkPoly.pop();
 	int p = 0;
 	depth = 0;
-	if (analyze(str, p)) return 1;
+	if (analyze(str, p, 0)) return 1;
 	cout << stkPoly.top().P << endl;
 	return 0;
 }
 
-int PManager::analyze(string str, int& p) {
+int PManager::analyze(string str, int& p, int size) {
 	string F = string();
 	int dot = 0, xs = 0;
 	double x = 0;
@@ -56,7 +56,7 @@ int PManager::analyze(string str, int& p) {
 			if (dot) return 1;
 			dot = 1;
 		} else if (isalpha(str[p])) {
-			if (xs) stkPoly.push(MyPolynomial(Polynomial(x), depth, p-1));
+			if (xs) stkPoly.push(MyPolynomial(Polynomial(x), depth, p - 1));
 			x = dot = xs = 0;
 			F.push_back(str[p]);
 		} else {
@@ -74,11 +74,11 @@ int PManager::analyze(string str, int& p) {
 				stkOpt.push(MyOperator('(', p));
 				depth++;
 			} else if (str[p] == ')') {
-				while (!stkOpt.empty() && stkOpt.top().opt != '(') {
+				while (stkOpt.size() > size && stkOpt.top().opt != '(') {
 					if (calStack()) return 1;
 					stkOpt.pop();
 				}
-				if (stkOpt.empty()) return 1;
+				if (stkOpt.size() <= size) return 1;
 				MyPolynomial P = stkPoly.top();
 				stkPoly.pop();
 				P.depth--;
@@ -90,23 +90,23 @@ int PManager::analyze(string str, int& p) {
 				if (p >= str.size()) return 1;
 				if (str[p] == '[') {
 					p++;
-					if (analyze(str, p)) return 1;
+					if (analyze(str, p, stkPoly.size())) return 1;
 					Polynomial a = stkPoly.top().P;
 					stkPoly.pop();
 					if (a.size() > 1) return 1;
 					p++;
-					if (analyze(str, p)) return 1;
+					if (analyze(str, p, stkPoly.size())) return 1;
 					Polynomial b = stkPoly.top().P;
 					stkPoly.pop();
 					if (b.size() > 1) return 1;
 					stkOpt.push(MyOperator('#', a, b, pos));
 				} else return 1;
 			} else if (str[p] == '!' || str[p] == '*' || str[p] == '/' || str[p] == '+' || str[p] == '-' || str[p] == '%') {
-				if (stkOpt.empty()) stkOpt.push(MyOperator(str[p], p));
+				if (stkOpt.size() == size) stkOpt.push(MyOperator(str[p], p));
 				else {
 					if (getPriority(str[p]) >= getPriority(stkOpt.top().opt)) stkOpt.push(MyOperator(str[p], p));
 					else {
-						while (!stkOpt.empty() && stkOpt.top().opt != '(' && getPriority(str[p]) < getPriority(stkOpt.top().opt)) {
+						while (stkOpt.size() > size && stkOpt.top().opt != '(' && getPriority(str[p]) < getPriority(stkOpt.top().opt)) {
 							if (calStack()) return 1;
 							stkOpt.pop();
 						}
@@ -127,11 +127,11 @@ int PManager::analyze(string str, int& p) {
 			stkPoly.push(MyPolynomial(iter->second, depth, p - 1));
 		} else return 1;
 	}
-	while (!stkOpt.empty()) {
+	while (stkOpt.size() > size) {
 		if (calStack()) return 1;
 		stkOpt.pop();
 	}
-	if (stkOpt.empty() && stkPoly.size() == 1) return 0;
+	if (stkOpt.size() == size && stkPoly.size() == size+1) return 0;
 	return 1;
 }
 

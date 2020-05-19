@@ -31,7 +31,7 @@ private:
     stack<MyOperator> stkOpt;
     stack<MyPolynomial> stkPoly;
     int depth;
-    int analyze(string str, int &p);
+    int analyze(string str, int &p, int size);
     int getPriority(char opt);
     int calStack();
 };
