@@ -1,5 +1,5 @@
 #include "Polynomial.h"
-#define EPS 1e-6
+#define EPS 1e-10
 #define PI acos(-1.0)
 
 Polynomial::Polynomial() {
@@ -57,6 +57,12 @@ Polynomial Polynomial::mod(int n) const {
     double *A = new double[n];
     for (int i = 0; i < n; ++i) A[n-i-1] = a[i];
     return Polynomial(A, n);
+}
+
+Polynomial Polynomial::fill(int n) const {
+    Polynomial P(*this);
+    while (P.size() < n) P.a.push_back(0);
+    return P;
 }
 
 ostream &operator << (ostream &out, const Polynomial &P) {
@@ -130,9 +136,9 @@ Polynomial Polynomial::operator * (const Polynomial &P) {
 
 Polynomial Polynomial::operator / (const Polynomial &P) {
     Polynomial F = reverse(), G = P.reverse();
-    int n = F.size(), m = G.size();
+    int n = size(), m = P.size();
     Polynomial Ginv = G.inv(n-m+1);
-    return (F*Ginv).mod(n-m+1).reverse();
+    return (F*Ginv).mod(n-m+1).fill(n-m+1).reverse();
 }
 
 Polynomial Polynomial::operator % (const Polynomial &P) {
@@ -198,4 +204,19 @@ void Polynomial::FFT(Complex *A, int len, int f) {
             A[i].a /= len;
         }
     }
+}
+
+double Polynomial::root() {
+    double x = 6, y = 0;
+    Polynomial F = derivate();
+    double fx = value(x), ffx = F.value(x);
+    if (fabs(value(x)) < EPS) return x;
+    while (fabs(x-y) >= EPS) {
+        x = y;
+        fx = value(x);
+        ffx = F.value(x);
+        y = x-fx/ffx;
+        if (fabs(value(y)) < EPS) break;
+    }
+    return y;
 }

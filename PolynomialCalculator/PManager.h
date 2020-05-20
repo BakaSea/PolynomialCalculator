@@ -12,6 +12,8 @@ public:
     void addPolynomial(string name, Polynomial p);
     Polynomial getPolynomial(string name);
     int calculate(string str);
+    void getRoot(string name);
+    void getInverse(string name);
 private:
     struct MyOperator {
         char opt;

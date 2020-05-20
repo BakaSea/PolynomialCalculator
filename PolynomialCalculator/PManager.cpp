@@ -1,4 +1,5 @@
 #include "PManager.h"
+#include <math.h>
 
 PManager::PManager() {
 	mapPoly.clear();
@@ -24,6 +25,21 @@ int PManager::calculate(string str) {
 	if (analyze(str, p, 0)) return 1;
 	cout << stkPoly.top().P << endl;
 	return 0;
+}
+
+void PManager::getRoot(string name) {
+	unordered_map<string, Polynomial>::iterator iter = mapPoly.find(name);
+	if (iter == mapPoly.end()) cout << name << " does not exist!" << endl;
+	else cout << "The root is " << iter->second.root() << endl;
+}
+
+void PManager::getInverse(string name) {
+	unordered_map<string, Polynomial>::iterator iter = mapPoly.find(name);
+	if (iter == mapPoly.end()) cout << name << " does not exist!" << endl;
+	else {
+		if (fabs(iter->second.a[0]) < 1e-10) cout << name << " has no inverse!" << endl;
+		else cout << iter->second.inv(iter->second.size()) << endl;
+	}
 }
 
 int PManager::analyze(string str, int& p, int size) {
@@ -85,7 +101,7 @@ int PManager::analyze(string str, int& p, int size) {
 				stkPoly.push(P);
 				stkOpt.pop();
 				depth--;
-			} else if (str[p] == '#') {
+			} else if (str[p] == '$') {
 				int pos = p++;
 				if (p >= str.size()) return 1;
 				if (str[p] == '[') {
@@ -99,7 +115,7 @@ int PManager::analyze(string str, int& p, int size) {
 					Polynomial b = stkPoly.top().P;
 					stkPoly.pop();
 					if (b.size() > 1) return 1;
-					stkOpt.push(MyOperator('#', a, b, pos));
+					stkOpt.push(MyOperator('$', a, b, pos));
 				} else return 1;
 			} else if (str[p] == '!' || str[p] == '*' || str[p] == '/' || str[p] == '+' || str[p] == '-' || str[p] == '%') {
 				if (stkOpt.size() == size) stkOpt.push(MyOperator(str[p], p));
@@ -138,7 +154,7 @@ int PManager::analyze(string str, int& p, int size) {
 int PManager::getPriority(char opt) {
 	if (opt == '(') return 4;
 	if (opt == '!') return 3;
-	if (opt == '#') return 3;
+	if (opt == '$') return 3;
 	if (opt == '*') return 2;
 	if (opt == '/') return 2;
 	if (opt == '+') return 1;
@@ -158,7 +174,7 @@ int PManager::calStack() {
 		if (G.pos >= opt.pos) return 1;
 		stkPoly.push(MyPolynomial(G.P.derivate(), G.depth, G.pos));
 		break;
-	case '#': {
+	case '$': {
 		if (G.pos <= opt.pos) return 1;
 		stkPoly.push(MyPolynomial(G.P.integrate(opt.a.a[0], opt.b.a[0]), G.depth, G.pos));
 		break;

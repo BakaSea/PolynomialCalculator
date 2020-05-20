@@ -15,7 +15,9 @@ void UI::show() {
     cout << "Please input an order:" << endl;
     cout << "1: Add a polynomial" << endl;
     cout << "2: Calculate" << endl;
-    cout << "3: Exit" << endl;
+    cout << "3: Get root" << endl;
+    cout << "4: Get the inverse" << endl;
+    cout << "5: Exit" << endl;
     cout << "===========================================" << endl;
     int opt, exec = 0;
     while (1) {
@@ -28,6 +30,12 @@ void UI::show() {
             calculate();
             break;
         case 3:
+            getRoot();
+            break;
+        case 4:
+            getInverse();
+            break;
+        case 5:
             exec = 1;
             break;
         default:
@@ -64,4 +72,18 @@ void UI::calculate() {
     getline(cin, str);
     getline(cin, str);
     if (manager->calculate(str)) cout << "The expression is illegal!" << endl;
+}
+
+void UI::getRoot() {
+    cout << "Please input the name of the polynomial:" << endl;
+    string name;
+    cin >> name;
+    manager->getRoot(name);
+}
+
+void UI::getInverse() {
+    cout << "Please input the name of the polynomial:" << endl;
+    string name;
+    cin >> name;
+    manager->getInverse(name);
 }

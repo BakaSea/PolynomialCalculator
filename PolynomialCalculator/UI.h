@@ -11,6 +11,8 @@ private:
     PManager *manager;
     void addPolynomial();
     void calculate();
+    void getRoot();
+    void getInverse();
 };
 
 #endif

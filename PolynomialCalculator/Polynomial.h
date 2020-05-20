@@ -20,6 +20,7 @@ public:
     double value(double x);
     Polynomial reverse() const;
     Polynomial mod(int n) const;
+    Polynomial fill(int n) const;
     friend ostream &operator << (ostream &out, const Polynomial &P);
     Polynomial operator + (const Polynomial &P);
     Polynomial operator - (const Polynomial &P);
@@ -31,6 +32,7 @@ public:
     Polynomial derivate();
     Polynomial integrate();
     Polynomial integrate(double a, double b);
+    double root();
 private:
     void FFT(Complex *A, int len, int f);
 };
