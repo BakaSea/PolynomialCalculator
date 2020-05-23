@@ -120,9 +120,9 @@ int PManager::analyze(string str, int& p, int size) {
 			} else if (str[p] == '!' || str[p] == '*' || str[p] == '/' || str[p] == '+' || str[p] == '-' || str[p] == '%') {
 				if (stkOpt.size() == size) stkOpt.push(MyOperator(str[p], p));
 				else {
-					if (getPriority(str[p]) >= getPriority(stkOpt.top().opt)) stkOpt.push(MyOperator(str[p], p));
+					if (getPriority(str[p]) > getPriority(stkOpt.top().opt)) stkOpt.push(MyOperator(str[p], p));
 					else {
-						while (stkOpt.size() > size && stkOpt.top().opt != '(' && getPriority(str[p]) < getPriority(stkOpt.top().opt)) {
+						while (stkOpt.size() > size && stkOpt.top().opt != '(' && getPriority(str[p]) <= getPriority(stkOpt.top().opt)) {
 							if (calStack()) return 1;
 							stkOpt.pop();
 						}
@@ -152,13 +152,13 @@ int PManager::analyze(string str, int& p, int size) {
 }
 
 int PManager::getPriority(char opt) {
-	if (opt == '(') return 4;
-	if (opt == '!') return 3;
-	if (opt == '$') return 3;
-	if (opt == '*') return 2;
-	if (opt == '/') return 2;
+	if (opt == '(') return 7;
+	if (opt == '!') return 6;
+	if (opt == '$') return 5;
+	if (opt == '/') return 4;
+	if (opt == '*') return 3;
+	if (opt == '-') return 2;
 	if (opt == '+') return 1;
-	if (opt == '-') return 1;
 	if (opt == '%') return 0;
 }
 
@@ -192,6 +192,7 @@ int PManager::calStack() {
 		MyPolynomial F = stkPoly.top();
 		stkPoly.pop();
 		if (F.depth != G.depth) return 1;
+		if (G.P.size() == 1 && fabs(G.P.a[0]) < 1e-10) return 1;
 		stkPoly.push(MyPolynomial(F.P / G.P, G.depth, F.pos));
 		break;
 	}
@@ -220,6 +221,7 @@ int PManager::calStack() {
 		MyPolynomial F = stkPoly.top();
 		stkPoly.pop();
 		if (F.depth != G.depth) return 1;
+		if (G.P.size() == 1 && fabs(G.P.a[0]) < 1e-10) return 1;
 		stkPoly.push(MyPolynomial(F.P % G.P, G.depth, F.pos));
 		break;
 	}

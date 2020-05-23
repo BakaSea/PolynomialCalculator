@@ -39,6 +39,7 @@ void UI::show() {
             exec = 1;
             break;
         default:
+            cout << "Unknown order." << endl;
             break;
         }
         if (exec) break;
@@ -46,24 +47,39 @@ void UI::show() {
 }
 
 void UI::addPolynomial() {
+    int flag = 0;
     cout << "Please input the length of the polynomial: ";
     int len;
     cin >> len;
-    cout << "Please input the coefficients:" << endl;
-    double *A = new double[len];
-    for (int i = 0; i < len; ++i) cin >> A[i];
-    Polynomial p = Polynomial(A, len);
-    string name;
-    cout << "Please input the name of the polynomial: ";
-    cin >> name;
-    for (int i = 0; i < name.size(); ++i) {
-        if (!isalpha(name[i])) {
-            cout << "The name of the polynomial only consists of letters!" << endl;
-            return;
+    if (len <= 0) {
+        cout << "Please input a positive integer!" << endl;
+        flag = 1;
+    }
+    if (!flag) {
+        cout << "Please input the coefficients:" << endl;
+        double *A = new double[len];
+        for (int i = 0; i < len; ++i) cin >> A[i];
+        Polynomial p = Polynomial(A, len);
+        string name;
+        cout << "Please input the name of the polynomial: ";
+        cin >> name;
+        for (int i = 0; i < name.size(); ++i) {
+            if (!isalpha(name[i])) {
+                cout << "The name of the polynomial only consists of letters!" << endl;
+                flag = 1;
+                break;
+            }
+        }
+        if (!flag) {
+            manager->addPolynomial(name, p);
+            cout << name << " = " << p << endl;
         }
     }
-    manager->addPolynomial(name, p);
-    cout << name << " = " << p << endl;
+    if (!flag) cout << "Add successfully." << endl;
+    cout << "Do you want to continue to add? (y/n): ";
+    string ans;
+    cin >> ans;
+    if (ans == "y") addPolynomial();
 }
 
 void UI::calculate() {
@@ -72,6 +88,10 @@ void UI::calculate() {
     getline(cin, str);
     getline(cin, str);
     if (manager->calculate(str)) cout << "The expression is illegal!" << endl;
+    else cout << "Calculate successfully." << endl;
+    cout << "Do you want to continue to calculate? (y/n): ";
+    cin >> str;
+    if (str == "y") calculate();
 }
 
 void UI::getRoot() {

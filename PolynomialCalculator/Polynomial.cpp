@@ -137,6 +137,7 @@ Polynomial Polynomial::operator * (const Polynomial &P) {
 Polynomial Polynomial::operator / (const Polynomial &P) {
     Polynomial F = reverse(), G = P.reverse();
     int n = size(), m = P.size();
+    if (n < m) return Polynomial(0);
     Polynomial Ginv = G.inv(n-m+1);
     return (F*Ginv).mod(n-m+1).fill(n-m+1).reverse();
 }
