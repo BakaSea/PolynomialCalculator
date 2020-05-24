@@ -22,7 +22,7 @@ int PManager::calculate(string str) {
 	while (!stkPoly.empty()) stkPoly.pop();
 	int p = 0;
 	depth = 0;
-	if (analyze(str, p, 0)) return 1;
+	if (analyze(str, p, 0, 0)) return 1;
 	cout << stkPoly.top().P << endl;
 	return 0;
 }
@@ -38,11 +38,11 @@ void PManager::getInverse(string name) {
 	if (iter == mapPoly.end()) cout << name << " does not exist!" << endl;
 	else {
 		if (fabs(iter->second.a[0]) < 1e-10) cout << name << " has no inverse!" << endl;
-		else cout << iter->second.inv(iter->second.size()) << endl;
+		else cout << name << "^(-1) = " << iter->second.inv(iter->second.size()) << endl;
 	}
 }
 
-int PManager::analyze(string str, int& p, int size) {
+int PManager::analyze(string str, int& p, int optSize, int polySize) {
 	string F = string();
 	int dot = 0, xs = 0;
 	double x = 0;
@@ -69,6 +69,7 @@ int PManager::analyze(string str, int& p, int size) {
 				} else return 1;
 			}
 			F.clear();
+			if (!xs) xs = 1;
 			if (dot) return 1;
 			dot = 1;
 		} else if (isalpha(str[p])) {
@@ -90,12 +91,14 @@ int PManager::analyze(string str, int& p, int size) {
 				stkOpt.push(MyOperator('(', p));
 				depth++;
 			} else if (str[p] == ')') {
-				while (stkOpt.size() > size && stkOpt.top().opt != '(') {
+				while (stkOpt.size() > optSize && stkOpt.top().opt != '(') {
 					if (calStack()) return 1;
 					stkOpt.pop();
 				}
-				if (stkOpt.size() <= size) return 1;
+				if (stkOpt.size() <= optSize) return 1;
+				if (stkPoly.size() <= polySize) return 1;
 				MyPolynomial P = stkPoly.top();
+				if (P.depth != depth) return 1;
 				stkPoly.pop();
 				P.depth--;
 				stkPoly.push(P);
@@ -106,23 +109,23 @@ int PManager::analyze(string str, int& p, int size) {
 				if (p >= str.size()) return 1;
 				if (str[p] == '[') {
 					p++;
-					if (analyze(str, p, stkPoly.size())) return 1;
+					if (analyze(str, p, stkOpt.size(), stkPoly.size())) return 1;
 					Polynomial a = stkPoly.top().P;
 					stkPoly.pop();
 					if (a.size() > 1) return 1;
 					p++;
-					if (analyze(str, p, stkPoly.size())) return 1;
+					if (analyze(str, p, stkOpt.size(), stkPoly.size())) return 1;
 					Polynomial b = stkPoly.top().P;
 					stkPoly.pop();
 					if (b.size() > 1) return 1;
 					stkOpt.push(MyOperator('$', a, b, pos));
 				} else return 1;
 			} else if (str[p] == '!' || str[p] == '*' || str[p] == '/' || str[p] == '+' || str[p] == '-' || str[p] == '%') {
-				if (stkOpt.size() == size) stkOpt.push(MyOperator(str[p], p));
+				if (stkOpt.size() == optSize) stkOpt.push(MyOperator(str[p], p));
 				else {
 					if (getPriority(str[p]) > getPriority(stkOpt.top().opt)) stkOpt.push(MyOperator(str[p], p));
 					else {
-						while (stkOpt.size() > size && stkOpt.top().opt != '(' && getPriority(str[p]) <= getPriority(stkOpt.top().opt)) {
+						while (stkOpt.size() > optSize && stkOpt.top().opt != '(' && getPriority(str[p]) <= getPriority(stkOpt.top().opt)) {
 							if (calStack()) return 1;
 							stkOpt.pop();
 						}
@@ -133,7 +136,7 @@ int PManager::analyze(string str, int& p, int size) {
 				break;
 			} else if (str[p] == ',') {
 				break;
-			}
+			} else return 1;
 		}
 	}
 	if (xs) stkPoly.push(MyPolynomial(Polynomial(x), depth, p - 1));
@@ -143,21 +146,21 @@ int PManager::analyze(string str, int& p, int size) {
 			stkPoly.push(MyPolynomial(iter->second, depth, p - 1));
 		} else return 1;
 	}
-	while (stkOpt.size() > size) {
+	while (stkOpt.size() > optSize) {
 		if (calStack()) return 1;
 		stkOpt.pop();
 	}
-	if (stkOpt.size() == size && stkPoly.size() == size+1) return 0;
+	if (stkOpt.size() == optSize && stkPoly.size() == polySize+1) return 0;
 	return 1;
 }
 
 int PManager::getPriority(char opt) {
-	if (opt == '(') return 7;
-	if (opt == '!') return 6;
-	if (opt == '$') return 5;
-	if (opt == '/') return 4;
-	if (opt == '*') return 3;
-	if (opt == '-') return 2;
+	if (opt == '(') return 5;
+	if (opt == '!') return 4;
+	if (opt == '$') return 3;
+	if (opt == '/') return 2;
+	if (opt == '*') return 2;
+	if (opt == '-') return 1;
 	if (opt == '+') return 1;
 	if (opt == '%') return 0;
 }

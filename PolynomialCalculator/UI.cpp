@@ -21,6 +21,7 @@ void UI::show() {
     cout << "===========================================" << endl;
     int opt, exec = 0;
     while (1) {
+        cout << "Please input the order: ";
         cin >> opt;
         switch (opt) {
         case 1:
