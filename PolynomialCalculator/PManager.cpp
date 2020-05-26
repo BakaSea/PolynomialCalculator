@@ -38,7 +38,7 @@ void PManager::getInverse(string name) {
 	if (iter == mapPoly.end()) cout << name << " does not exist!" << endl;
 	else {
 		if (fabs(iter->second.a[0]) < 1e-10) cout << name << " has no inverse!" << endl;
-		else cout << iter->second.inv(iter->second.size()) << endl;
+		else cout << name << "^(-1) = " << iter->second.inv(iter->second.size()) << endl;
 	}
 }
 
@@ -69,6 +69,7 @@ int PManager::analyze(string str, int& p, int optSize, int polySize) {
 				} else return 1;
 			}
 			F.clear();
+			if (!xs) xs = 1;
 			if (dot) return 1;
 			dot = 1;
 		} else if (isalpha(str[p])) {
@@ -135,7 +136,7 @@ int PManager::analyze(string str, int& p, int optSize, int polySize) {
 				break;
 			} else if (str[p] == ',') {
 				break;
-			}
+			} else return 1;
 		}
 	}
 	if (xs) stkPoly.push(MyPolynomial(Polynomial(x), depth, p - 1));
