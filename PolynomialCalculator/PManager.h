@@ -35,7 +35,7 @@ private:
 	int depth;
 	int analyze(string str, int& p, int optSize, int polySize);
 	int getPriority(char opt);
-	int calStack();
+	int calStack(int polySize);
 };
 
 #endif
