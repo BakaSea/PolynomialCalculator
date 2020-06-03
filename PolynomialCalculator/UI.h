@@ -10,6 +10,8 @@ public:
 private:
     PManager *manager;
     void addPolynomial();
+    void deletePolynomial();
+    void showPolynomial();
     void calculate();
     void getRoot();
     void getInverse();

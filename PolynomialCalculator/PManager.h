@@ -9,7 +9,9 @@ class PManager {
 public:
 	PManager();
 	~PManager();
-	void addPolynomial(string name, Polynomial p);
+	int addPolynomial(string name, Polynomial p);
+	int deletePolynomial(string name);
+	void printPolynomial();
 	Polynomial getPolynomial(string name);
 	int calculate(string str);
 	void getRoot(string name);

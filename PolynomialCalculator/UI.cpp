@@ -14,10 +14,12 @@ void UI::show() {
     cout << "========== Polynomial Calculator ==========" << endl;
     cout << "Please input an order:" << endl;
     cout << "1: Add a polynomial" << endl;
-    cout << "2: Calculate" << endl;
-    cout << "3: Get root" << endl;
-    cout << "4: Get the inverse" << endl;
-    cout << "5: Exit" << endl;
+    cout << "2: Delete a polynomial" << endl;
+    cout << "3: Show all polynomials" << endl;
+    cout << "4: Calculate" << endl;
+    cout << "5: Get root" << endl;
+    cout << "6: Get the inverse" << endl;
+    cout << "7: Exit" << endl;
     cout << "===========================================" << endl;
     int opt, exec = 0;
     while (1) {
@@ -28,15 +30,21 @@ void UI::show() {
             addPolynomial();
             break;
         case 2:
-            calculate();
+            deletePolynomial();
             break;
         case 3:
-            getRoot();
+            showPolynomial();
             break;
         case 4:
-            getInverse();
+            calculate();
             break;
         case 5:
+            getRoot();
+            break;
+        case 6:
+            getInverse();
+            break;
+        case 7:
             exec = 1;
             break;
         default:
@@ -72,8 +80,10 @@ void UI::addPolynomial() {
             }
         }
         if (!flag) {
-            manager->addPolynomial(name, p);
-            cout << name << " = " << p << endl;
+            if (manager->addPolynomial(name, p)) {
+                cout << name << " exists!" << endl;
+                flag = 1;
+            } else cout << name << " = " << p << endl;
         }
     }
     if (!flag) cout << "Add successfully." << endl;
@@ -81,6 +91,21 @@ void UI::addPolynomial() {
     string ans;
     cin >> ans;
     if (ans == "y") addPolynomial();
+}
+
+void UI::deletePolynomial() {
+    string name;
+    cout << "Please input the name of the polynomial: ";
+    cin >> name;
+    if (manager->deletePolynomial(name)) {
+        cout << name << " does not exist!" << endl;
+    } else {
+        cout << "Delete successfully." << endl;
+    }
+}
+
+void UI::showPolynomial() {
+    manager->printPolynomial();
 }
 
 void UI::calculate() {

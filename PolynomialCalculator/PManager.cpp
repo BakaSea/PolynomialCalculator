@@ -9,8 +9,28 @@ PManager::~PManager() {
 	mapPoly.clear();
 }
 
-void PManager::addPolynomial(string name, Polynomial p) {
+int PManager::addPolynomial(string name, Polynomial p) {
+	unordered_map<string, Polynomial>::iterator iter = mapPoly.find(name);
+	if (iter != mapPoly.end()) return 1;
 	mapPoly[name] = p;
+	return 0;
+}
+
+int PManager::deletePolynomial(string name) {
+	unordered_map<string, Polynomial>::iterator iter = mapPoly.find(name);
+	if (iter != mapPoly.end()) {
+		mapPoly.erase(name);
+		return 0;
+	} else return 1;
+}
+
+void PManager::printPolynomial() {
+	if (mapPoly.empty()) cout << "There are no polynomials!" << endl;
+	else {
+		for (unordered_map<string, Polynomial>::iterator iter = mapPoly.begin(); iter != mapPoly.end(); ++iter) {
+			cout << iter->first << " = " << iter->second << endl;
+		}
+	}
 }
 
 Polynomial PManager::getPolynomial(string name) {
