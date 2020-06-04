@@ -212,6 +212,7 @@ double Polynomial::root() {
     Polynomial F = derivate();
     double fx = value(x), ffx = F.value(x);
     if (fabs(value(x)) < EPS) return x;
+    y = x-fx/ffx;
     while (fabs(x-y) >= EPS) {
         x = y;
         fx = value(x);
